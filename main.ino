@@ -19,10 +19,10 @@ int getDistance() {
   
   duration = pulseIn(echoPin, HIGH);
   
-  Serial.println(duration);
+  //Serial.println(duration);
   
   cm = 0.0173*duration;
-  
+  Serial.println("duration");
   Serial.println(cm);
   
   delay(10);
@@ -31,6 +31,26 @@ int getDistance() {
   
 }
 
+int findIndex(float arr[], int n, float target)
+{
+    for (int i = 0; i < n; i++) {
+        if (arr[i] == target) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+float getMin(float arr[], int n)
+{
+    int res = arr[0];
+  	int i;
+    for (i = 1; i < n; i++)
+        res = min(res, arr[i]);
+  	int m = sizeof(arr) / sizeof(*arr);
+    int index = findIndex(arr, m, res);
+    return index;
+}
 
 void setup() {
   Serial.begin(9600);
@@ -43,10 +63,30 @@ void setup() {
 }
 
 void loop() {
-  getDistance();
+  //getDistance();
   int sensorValue = analogRead(A0);
-  int angle = sensorValue * 180.0/1023;
-  //Serial.println(angle);
-  myservo.write(angle);              // tell servo to go to position in variable 'pos'
+  float measurements[180];
+  float imeasurements[180];
+  //int angle = sensorValue * 180.0/1023;
+  for (int i = 0; i <= 180; i++) {
+  // statement(s);
+    myservo.write(i);
+    measurements[i] = getDistance();
+    
+}
+  float min = getMin(measurements,180);
+  Serial.println(min);
+  
+  for (int ci = min-20; ci <= min-20; ci++){
+    myservo.write(ci);
+    imeasurements[ci] = getDistance();
+    
+  }
+  //for refined in range(min-20, min-20, 5):
+  //servo.setPos(refined)
+  //improved_measurement[refined] = sensor.getDistance()
+  
+  
+  //myservo.write(angle);              // tell servo to go to position in variable 'pos'
   delay(15);                       // waits 15ms for the servo to reach the position                   
 }
