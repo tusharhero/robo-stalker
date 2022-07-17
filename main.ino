@@ -12,9 +12,9 @@ int getDistance() {
   long duration;
   float cm;
 
-  	digitalWrite(9, HIGH);
+  	digitalWrite(trigPin, HIGH);
 	delayMicroseconds(10);
-	digitalWrite(9, LOW);
+	digitalWrite(trigPin, LOW);
 
   
   duration = pulseIn(echoPin, HIGH);
