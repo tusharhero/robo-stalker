@@ -30,28 +30,6 @@ int getDistance() {
   return cm;
   
 }
-
-int findIndex(float arr[], int n, float target)
-{
-    for (int i = 0; i < n; i++) {
-        if (arr[i] == target) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-float getMin(float arr[], int n)
-{
-    int res = arr[0];
-  	int i;
-    for (i = 1; i < n; i++)
-        res = min(res, arr[i]);
-  	int m = sizeof(arr) / sizeof(*arr);
-    int index = findIndex(arr, m, res);
-    return index;
-}
-
 void setup() {
   Serial.begin(9600);
   myservo.attach(9);  // attaches the servo on pin 9 to the servo object
@@ -65,23 +43,26 @@ void setup() {
 void loop() {
   //getDistance();
   int sensorValue = analogRead(A0);
-  float measurements[180];
-  float imeasurements[180];
-  //int angle = sensorValue * 180.0/1023;
-  for (int i = 0; i <= 180; i++) {
-  // statement(s);
-    myservo.write(i);
-    measurements[i] = getDistance();
-    
-}
-  float min = getMin(measurements,180);
-  Serial.println(min);
-  
-  for (int ci = min-20; ci <= min-20; ci++){
-    myservo.write(ci);
-    imeasurements[ci] = getDistance();
-    
+uint16_t min_dist = 65535;
+uint8_t min_angle = 0;
+for (uint8_t i = 0; i < 180; i+=9) { // do 20 sectors
+  myservo.write(i);
+  delay(500);
+  uint16_t dist = getDistance();
+  if (dist < min_dist) {
+    min_dist = dist;
+    min_angle = i;
   }
+}
+  // float min = getMin(measurements,180);
+
+  
+  myservo.write(min_angle);
+  delay(500);
+  while (getDistance() <= min_dist){
+    delay(25);
+  }
+  
   //for refined in range(min-20, min-20, 5):
   //servo.setPos(refined)
   //improved_measurement[refined] = sensor.getDistance()
